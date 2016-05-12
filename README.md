@@ -12,6 +12,8 @@
 
 ### Files:
 
+Set up your editor/IDE to use 4 spaces as tabs or fite me irl.
+
 * `lcd.c` - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
 * `???.c` - ???
 
