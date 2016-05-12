@@ -4,6 +4,17 @@
 
 [overleaf](https://www.overleaf.com/5154243hxzfnh)
 
+### To Do:
+
+* LCD interface
+* ADC sample and store
+* actual assignment
+
+### Files:
+
+* `lcd.c` - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
+* `???.c` - ???
+
 ### Multiple functions how-to:
 Do not throw all the functions in the main file, keep them separate. For each function file, create a header file and `#include` it in both the main file and your function file as shown below:
 
