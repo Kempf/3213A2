@@ -14,9 +14,9 @@
 
 Set up your editor/IDE to use 4 spaces as tabs or fite me irl.
 
-* `lcd.c` *[untested]* - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
-* `test.c` *[untested]* - main file to test LCD functions, also blinks LEDs (killer feature)
-* `???.c` *[???]* - ???
+* `lcd.c` **[untested]** - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
+* `test.c` **[untested]** - main file to test LCD functions, also blinks LEDs (killer feature)
+* `???.c` **[???]** - ???
 
 ### Multiple functions how-to:
 Do not throw all the functions in the main file, keep them separate. For each function file, create a header file and `#include` it in both the main file and your function file as shown below:
