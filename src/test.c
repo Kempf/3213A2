@@ -7,7 +7,7 @@ pinout:
     pb0 red LED
     pb1 green LED
     
-    pc0 anal input (waves go here)
+    pc0 anal input ( ͡° ͜ʖ ͡°)
     
 */
 
@@ -23,6 +23,8 @@ void init(void)
 
 int main(void)
 {
+    /*int i = 0;
+    float f = 0.0;*/
     init();
     lcd_init();
     lcd_test();
@@ -33,5 +35,11 @@ int main(void)
         _delay_ms(250);
         PORTB = 0x2;
         _delay_ms(250);
+        /*i++;
+        f+=0.1;
+        lcd_screen1(i,i,f);*/
+        // lcd_screen2(i, i, i, i);
+        // lcd_screen3(i, f);
+        
     }
 }
