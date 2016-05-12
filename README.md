@@ -15,7 +15,7 @@ Do not throw all the functions in the main file, keep them separate. For each fu
 int main (void)
 {
     \\ use the function
-    top = kek();
+    int top = kek();
     return 0;
 }
 ```
