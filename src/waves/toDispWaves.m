@@ -20,7 +20,9 @@
 % all different shapes, regardless of noise.
 % The peaks also have different magnitudes for each shape - Circle > Triangle > Inverse Circle,
 % assuming the same width.
-% However, different widths makes this slightly unreliable. One possibility would be to combine
+% However, different widths makes this slightly unreliable. 
+% It MAY* work on it's own using thresholds, but this is yet to be seen. This could be worth testing.
+% One possibility would be to combine
 % these two methods of analysis (If the chip has enough computation power &/or memory. 
 % Basically, if pulse is detected, check differentiation to determine what it was. 
 % This would be decent, unless noise is present.
@@ -29,7 +31,7 @@
 % This is just some interim analysis.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+%I also have added a rough multiplication by 1024 to simulate the ADC system. Noise makes that a bit interesting.
 
 
 
@@ -39,7 +41,7 @@ close all;
 
 
 %Wave1 only shows curved pulses.
-a = csvread('wave1.txt');
+a = 1024 .* csvread('wave1.txt');
 subplot(3,1,1);
 plot(a(:,1), a(:,2));
 subplot(3,1,2);
@@ -69,7 +71,7 @@ plot(x_int, w1_int);
 %Includes all 3. Derivation of wide triangles is pretty shitty. They are
 %very difficult to notice. Zoom in on lower plot at 3.27 seconds.
 figure;
-b = csvread('wave2.txt');
+b = 1024 .* csvread('wave2.txt');
 subplot(3,1,1);
 plot(b(:,1), b(:,2));
 subplot(3,1,2);
@@ -99,7 +101,7 @@ plot(x_int, w2_int);
 
 
 figure;
-c = csvread('wave3.txt');
+c = 1024 .* csvread('wave3.txt');
 subplot(3,1,1);
 plot(c(:,1), c(:,2));
 subplot(3,1,2);
@@ -128,7 +130,7 @@ plot(x_int, w3_int);
 
 %Differentiation does not work for high signal noise. Needs a new method.
 figure;
-d = csvread('wave4.txt');
+d = 1024 .* csvread('wave4.txt');
 subplot(3,1,1);
 plot(d(:,1), d(:,2));
 subplot(3,1,2);
