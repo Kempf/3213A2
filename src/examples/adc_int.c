@@ -16,6 +16,6 @@ void main ()
     DDRC = 0x07; //set bottom 3 bits of port C for output
     ADMUX = 0x3; //select to read only from ADC3
     ADCSRA = 0xCD; //ADC enabled,/8 divisor, interrupt unmask, conv started
-    asm (“sei”); //enable interrupts
+    asm ("sei"); //enable interrupts
     while(1); //do nothing (ADC interrupt does it all)
 }
