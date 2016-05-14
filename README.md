@@ -7,8 +7,9 @@
 ### To Do:
 
 * LCD interface
-* ADC sample and store
-* actual assignment
+* Clock interrupt and timer
+* ADC interrupt (5 kHz sample)
+* data processing
 
 ### Files:
 
