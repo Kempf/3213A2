@@ -16,17 +16,12 @@ pinout:
 #include <avr/interrupt.h>
 #include "lcd.h"
 
-static unsigned int time_count, time;
+static unsigned int time_ms;
 
 // timer interrupt
 ISR(TIMER0_OVF_vect)
 {
-    TCNT0 = 207; //each count to 256 takes 50ms
-    time_count ++;
-    if (time_count==20) {
-        time ++;
-        time_count = 0;
-    }
+    time_ms ++; // 1MHz/1024 is almost 1 ms
 }
 
 // initialize registers
@@ -45,7 +40,7 @@ void init(void)
 
 int main(void)
 {
-    /*int i = 0;
+    /*int i = 0, t = 0;
     float f = 0.0;*/
     init();
     lcd_init();
@@ -57,9 +52,10 @@ int main(void)
         _delay_ms(250);
         PORTB = 0x2;
         _delay_ms(250);
-        /*i++;
-        f+=0.1;
-        lcd_screen1(i,i,f);*/
+        /*i ++;
+        f += 0.1;
+        t = time_ms * 1000;
+        lcd_screen1(t,i,f);*/
         // lcd_screen2(i, i, i, i);
         // lcd_screen3(i, f);
         
