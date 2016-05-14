@@ -8,7 +8,7 @@
 
 * LCD interface
 * Clock interrupt and timer
-* ADC interrupt (5 kHz sample)
+* ADC interrupt (5 kHz sample ~ /16 prescaler setting)
 * data processing
 
 ### Files:
