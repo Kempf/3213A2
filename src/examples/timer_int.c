@@ -14,6 +14,6 @@ void main ()
     TCCR0 = 0x05; //set prescaler to clk/1024
     TCNT0=0; //set count to 0
     TIMSK=0x01; //unmask timer0 overflow interrupt
-    asm("sei"); ;//enable interrupts
+    asm("sei"); //enable interrupts
     while(1); //do nothing
 }

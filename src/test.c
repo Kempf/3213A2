@@ -16,9 +16,31 @@ pinout:
 #include <avr/interrupt.h>
 #include "lcd.h"
 
+static unsigned int time_count, time;
+
+// timer interrupt
+ISR(TIMER0_OVF_vect)
+{
+    TCNT0 = 207; //each count to 256 takes 50ms
+    time_count ++;
+    if (time_count==20) {
+        time ++;
+        time_count = 0;
+    }
+}
+
+// initialize registers
 void init(void)
 {
-    DDRB = 0x3; // pb0 pb1
+    // leds
+    DDRB = 0x3; // pb0 pb1 output
+    
+    // timer stuff
+    TCCR0 = 0x05; // set prescaler to clk/1024
+    TCNT0 = 0; // set timer count to 0
+    TIMSK = 0x01; // unmask timer0 overflow interrupt
+    
+    asm("sei"); // enable interrupts
 }
 
 int main(void)
