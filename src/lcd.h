@@ -6,8 +6,6 @@ void lcd_clear(void);
 void lcd_send(unsigned char rs, unsigned char data);
 void lcd_test(void);
 unsigned char lcd_lookup(char symb);
-void lcd_screen1(int t, int n, int f);
-void lcd_screen2(int t, int r, int s, int h);
-void lcd_screen3(int t, int w);
+void lcd_screen(int t, int n, float f, int r, int s, int h, float w);
 
 #endif
