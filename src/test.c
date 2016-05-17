@@ -1,17 +1,18 @@
 /*
-
 test.c tests lcd functions
-
 pinout:
     
     pb0 red LED
     pb1 green LED
     
-    pc0 anal input ( ͡° ͜ʖ ͡°)
+    pc0 anal input ( ?° ?? ?°)
     
 */
 
+//#define F_CPU 1000000UL
+
 #include <avr/io.h>
+#include <stdio.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "lcd.h"
@@ -21,7 +22,8 @@ static unsigned int time_ms;
 // timer interrupt
 ISR(TIMER0_OVF_vect)
 {
-    time_ms ++; // 1MHz/1024 is almost 1 ms
+    TCNT0 = 255;
+	time_ms ++; // 1MHz/1024 is almost 1 ms
 }
 
 // initialize registers
@@ -40,24 +42,13 @@ void init(void)
 
 int main(void)
 {
-    /*int i = 0, t = 0;
-    float f = 0.0;*/
     init();
     lcd_init();
-    lcd_test();
+    //lcd_test();
+	PORTB = 0x2;
 	while(1)
     {
-        // blink some leds
-        PORTB = 0x1;
-        _delay_ms(250);
-        PORTB = 0x2;
-        _delay_ms(250);
-        /*i ++;
-        f += 0.1;
-        t = time_ms * 1000;
-        lcd_screen1(t,i,f);*/
-        // lcd_screen2(i, i, i, i);
-        // lcd_screen3(i, f);
-        
+		lcd_screen(time_ms,5,1.1,1,2,3,5.5);
+		PORTB = ~PORTB;			
     }
 }
