@@ -16,7 +16,7 @@
 Set up your editor/IDE to use 4 spaces as tabs or fite me irl.
 
 * `lcd.c` **[untested]** - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
-* `test.c` **[untested]** - main file to test LCD functions, also blinks LEDs (killer feature)
+* `test.c` **[untested]** - main file to test LCD and ADC functions, also blinks LEDs (killer feature, currently not working)
 * `???.c` **[???]** - ???
 
 ### Multiple functions how-to:
