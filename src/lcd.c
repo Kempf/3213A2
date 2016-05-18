@@ -109,6 +109,8 @@ void lcd_screen(int t, int n, float f, int r, int s, int h, float w)
 	switch(screen)
 	{
 		case 0:
+		case 1:
+		case 2:
 			// output time
 			lcd_send(0,0b00000001);
 			//lcd_clear();
@@ -140,6 +142,8 @@ void lcd_screen(int t, int n, float f, int r, int s, int h, float w)
 			lcd_send(1,lcd_lookup('z'));
 			break;
 		case 3:
+		case 4:
+		case 5:
 			// output time
 			lcd_send(0,0b00000001);
 			//lcd_clear();
@@ -174,6 +178,8 @@ void lcd_screen(int t, int n, float f, int r, int s, int h, float w)
 			lcd_send(1,lcd_lookup(' '));
 			break;
 		case 6:
+		case 7:
+		case 8:
 			// output time
 			lcd_send(0,0b00000001);
 			//lcd_clear();
@@ -201,15 +207,6 @@ void lcd_screen(int t, int n, float f, int r, int s, int h, float w)
 			lcd_send(1,lcd_lookup('s'));
 			break;
 		default:
-			// output time
-			lcd_send(0,0b00000001);
-			lcd_send(1,lcd_lookup('T'));
-			lcd_send(1,lcd_lookup(':'));
-			sprintf(buffer,"%5d",t);
-			for(int c = 0; c < 5; c++)
-			lcd_send(1,lcd_lookup(buffer[c]));
-			lcd_send(1,lcd_lookup('s'));
-			lcd_send(1,lcd_lookup(' '));
 			break;
 	}	
 }
