@@ -19,6 +19,15 @@ Set up your editor/IDE to use 4 spaces as tabs or fite me irl.
 * `test.c` **[untested]** - main file to test LCD and ADC functions, also blinks LEDs (killer feature, currently not working)
 * `???.c` **[???]** - ???
 
+### Lab times:
+
+* TUE 17MAY 1500--1700
+* THU 19MAY 1100--1300
+* FRI 20MAY 1100--1300
+* MON 23MAY 1100--1300
+* TUE 24MAY 1300--1700
+* THU 26MAY 1100--1300
+
 ### Multiple functions how-to:
 Do not throw all the functions in the main file, keep them separate. For each function file, create a header file and `#include` it in both the main file and your function file as shown below:
 
@@ -53,11 +62,3 @@ int kek(void)
     return 42;
 }
 ```
-### Lab times:
-
-* TUE 17MAY 1500--1700
-* THU 19MAY 1100--1300
-* FRI 20MAY 1100--1300
-* MON 23MAY 1100--1300
-* TUE 24MAY 1300--1700
-* THU 26MAY 1100--1300
