@@ -20,16 +20,16 @@ charset: http://goo.gl/872aBz
 void lcd_init(void)
 {
     // set up registers
-	DDRC = 0b00110000; // pc4 rs, pc5 enable
-	DDRD = 0xFF; // data
+	DDRC = DDRC | 0b00110000; // pc4 rs, pc5 enable
+	DDRD = DDRD | 0xFF; // data
 	_delay_ms(15); //wait for power up
 	
 	//initialisation of LCD screen
 	lcd_send(0,0b00011100); // function set (5x7 dot format, 2 line mode, 8-bit data)
 	lcd_send(0,0b00110000); // Blink OFF, underline OFF, Display ON
 	lcd_send(0,0b01100000); // character entry mode with increment and display shift OFF
-	lcd_send(0,0b10000000); // clear screen
     lcd_clear();
+    lcd_return();
 }
 
 // clear screen
@@ -45,13 +45,13 @@ void lcd_return(void)
 }
 
 // first row
-void lcd_goto(unsigned char addr)
+void lcd_goto(uint8_t addr)
 {
     lcd_send(0,0b00000001 | (reverse[addr] << 1)); // this contraption reverses address and adds command bit
 }
 
 // sends data to LCD
-void lcd_send(unsigned char rs, unsigned char data)
+void lcd_send(uint8_t rs, uint8_t data)
 {
     // set enable and rs, send command
     PORTC = (rs << 4) | 0b00100000;
@@ -76,7 +76,7 @@ void lcd_test(void)
 }
 
 // returns character code
-unsigned char lcd_lookup(char symb)
+uint8_t lcd_lookup(char symb)
 {
     switch(symb)
     {
@@ -115,7 +115,7 @@ unsigned char lcd_lookup(char symb)
 void lcd_screen(int t, int n, int f, int r, int s, int h, int w)
 {
     char buffer[5];
-    unsigned char screen = t % 9;
+    uint8_t screen = t % 9;
 	switch(screen)
 	{
 		case 0:
@@ -222,7 +222,7 @@ void lcd_screen(int t, int n, int f, int r, int s, int h, int w)
 }
 
 // really, fuck the guy who wired the data bus backwards
-static const unsigned char reverse[] = 
+static const uint8_t reverse[] = 
 {
   0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0, 
   0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8, 0x18, 0x98, 0x58, 0xD8, 0x38, 0xB8, 0x78, 0xF8, 

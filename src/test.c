@@ -16,8 +16,11 @@ pinout:
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "lcd.h"
+#include "adc.h"
 
-static unsigned int time_ms = 0, time_s = 0, lcd_tick = 0;
+uint16_t time_ms = 0, time_s = 0, lcd_tick = 0, adc_data = 0;
+uint16_t n, r, s, h, f, w;
+uint8_t adc_flag = 0; 
 
 // timer interrupt
 ISR(TIMER0_OVF_vect)
@@ -32,13 +35,21 @@ ISR(TIMER0_OVF_vect)
     time_s = time_ms/1000; // time in sec
 }
 
+// adc interrupt
+ISR(ADC_vect)
+{
+    adc_data = ADCW; // save data
+    adc_flag = 1; // set processing flag
+    ADCSRA = ADCSRA | 0x40; // ADSC to 1 to start conv
+}
+
 // initialize registers
 void init(void)
 {
     // leds
     DDRB = 0x3; // pb0 pb1 output
     
-    PORTB = 0x2;
+    PORTB = 0x3;
     
     // timer stuff
     TCCR0 = 0x03; // set prescaler to 64
@@ -51,6 +62,7 @@ void init(void)
 int main(void)
 {
     init();
+    adc_init();
     lcd_init();
     //lcd_test();
 	while(1)
@@ -58,8 +70,15 @@ int main(void)
         // run lcd update every 1 sec
 		if(!lcd_tick)
         {
-            lcd_screen(time_s,time_ms,11,1,2,3,551);
-            PORTB = ~PORTB;
+            lcd_screen(time_s,time_ms,f,r,s,h,w);
+            PORTB = PORTB^0x2; // flip led
+        }
+        // do adc data processing if there's new data
+        if(adc_flag)
+        {
+            adc_process(&adc_data, &n, &r, &s, &h, &f, &w);
+            adc_flag = 0;
+            PORTB = PORTB^0x1;
         }
     }
 }

@@ -4,10 +4,10 @@
 void lcd_init(void);
 void lcd_clear(void);
 void lcd_return(void);
-void lcd_goto(unsigned char addr);
-void lcd_send(unsigned char rs, unsigned char data);
+void lcd_goto(uint8_t addr);
+void lcd_send(uint8_t rs, uint8_t data);
 void lcd_test(void);
-unsigned char lcd_lookup(char symb);
+uint8_t lcd_lookup(char symb);
 void lcd_screen(int s, int n, int f, int r, int s, int h, int w);
 
 #endif
