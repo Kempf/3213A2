@@ -66,10 +66,12 @@ void lcd_send(uint8_t rs, uint8_t data)
 // outputs test string
 void lcd_test(void)
 {
+    lcd_goto(0);
 	lcd_send(1,0b01100011);
 	lcd_send(1,0b00110101);
 	lcd_send(1,0b00001101);
 	lcd_send(1,0b00000100);
+    lcd_goto(64);
 	lcd_send(1,0b01111010);
 	lcd_send(1,0b11111010);
 	lcd_send(1,0b01111010);

@@ -66,7 +66,11 @@ int main(void)
     init();
     adc_init();
     lcd_init();
-    //lcd_test();
+    lcd_test();
+    _delay_ms(250);
+    _delay_ms(250);
+    _delay_ms(250);
+    _delay_ms(250);
 	while(1)
     {
         // run lcd update every 1 sec
