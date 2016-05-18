@@ -18,10 +18,10 @@ void adc_init(void)
 // do perverted things to the data
 void adc_process(uint16_t *data, *n, *r, *s, *h, *f, *w)
 {
-    *n = 0;
-    *r = 1;
-    *s = 2;
-    *h = 3;
+    *n = 14;
+    *r = 88;
+    *s = 42;
+    *h = 69;
     *f = *data; // just for testing
-    *w = 5678;
+    *w = 1337;
 }

@@ -19,7 +19,7 @@ pinout:
 #include "adc.h"
 
 uint16_t time_ms = 0, time_s = 0, lcd_tick = 0, adc_data = 0;
-uint16_t n, r, s, h, f, w;
+uint16_t n = 0, r = 0, s = 0, h = 0, f = 0, w = 0;
 uint8_t adc_flag = 0; 
 
 // timer interrupt
@@ -38,6 +38,8 @@ ISR(TIMER0_OVF_vect)
 // adc interrupt
 ISR(ADC_vect)
 {
+    if(adc_flag)
+        PORTB = PORTB | 0x1;
     adc_data = ADCW; // save data
     adc_flag = 1; // set processing flag
     ADCSRA = ADCSRA | 0x40; // ADSC to 1 to start conv
@@ -49,7 +51,7 @@ void init(void)
     // leds
     DDRB = 0x3; // pb0 pb1 output
     
-    PORTB = 0x3;
+    PORTB = 0x2;
     
     // timer stuff
     TCCR0 = 0x03; // set prescaler to 64
@@ -78,7 +80,6 @@ int main(void)
         {
             adc_process(&adc_data, &n, &r, &s, &h, &f, &w);
             adc_flag = 0;
-            PORTB = PORTB^0x1;
         }
     }
 }

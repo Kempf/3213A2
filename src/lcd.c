@@ -47,7 +47,7 @@ void lcd_return(void)
 // first row
 void lcd_goto(uint8_t addr)
 {
-    lcd_send(0,0b00000001 | (reverse[addr] << 1)); // this contraption reverses address and adds command bit
+    lcd_send(0,0b00000001 | reverse[addr]); // this contraption reverses address and adds command bit
 }
 
 // sends data to LCD
