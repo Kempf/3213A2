@@ -101,10 +101,11 @@ unsigned char lcd_lookup(char symb)
 }
 
 // outputs first stat screen
-void lcd_screen(int t, int n, float f, int r, int s, int h, float w)
+void lcd_screen(int tms, int n, float f, int r, int s, int h, float w)
 {
     char buffer[5];
-	t = (int)(t/1000);
+    if(!tms%1000) { // run every second
+	t = (int)(tms/1000);
     unsigned char screen = t % 9;
 	switch(screen)
 	{
@@ -209,4 +210,5 @@ void lcd_screen(int t, int n, float f, int r, int s, int h, float w)
 		default:
 			break;
 	}	
+    }
 }
