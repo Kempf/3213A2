@@ -23,7 +23,7 @@ void adc_init(void)
 }
 
 // do perverted things to the data
-void adc_process(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *f, uint16_t *w, uint16_t *ts, uint16_t *te, uint16_t tms)
+void adc_test(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *f, uint16_t *w, uint16_t *ts, uint16_t *te, uint16_t tms)
 {
     if(*ts)
 		*te = tms;
@@ -37,7 +37,7 @@ void adc_process(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t
 	*w = 1488;
 }
 
-void movingAverage(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa /*This is an array. Go figure.*/, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td)
+void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa /*This is an array. Go figure.*/, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td)
 {
 	//Using a 32 term moving average at the moment. Might be too large.
 	if (count == ARR - 1){count = 0;}

@@ -79,8 +79,8 @@ int main(void)
         // do adc data processing if there's new data
         if(adc_flag && (!overtime))
         {
-            movingAverage(&adc_data, &th_latch, &count, adc_array, &r, &s, &h, &n, &time_ms, &ts, &te, &f, &w, &td);
-            //adc_process(&adc_data, &n, &r, &s, &h, &f, &w, &ts, &te, time_ms);
+            adc_process(&adc_data, &th_latch, &count, adc_array, &r, &s, &h, &n, &time_ms, &ts, &te, &f, &w, &td);
+            //adc_test(&adc_data, &n, &r, &s, &h, &f, &w, &ts, &te, time_ms);
             adc_flag = 0;
         }
     }
