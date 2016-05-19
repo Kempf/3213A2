@@ -9,8 +9,6 @@ pinout:
     
 */
 
-#define F_CPU 16000000UL
-
 #include <avr/io.h>
 #include <stdio.h>
 #include <util/delay.h>
@@ -19,20 +17,22 @@ pinout:
 #include "adc.h"
 
 uint16_t time_ms = 0, time_s = 0, lcd_tick = 0, adc_data = 0;
-uint16_t n = 0, r = 0, s = 0, h = 0, f = 0, w = 0;
-uint8_t adc_flag = 0; 
+uint16_t n = 0, r = 0, s = 0, h = 0, f = 0, w = 0, ts = 0, te = 0;
+uint8_t adc_flag = 0, overtime = 0; 
 
 // timer interrupt
 ISR(TIMER0_OVF_vect)
 {
-    TCNT0 = 255;
-	time_ms ++; // 16MHz/64 is almost 1 ms
+	TCNT0 = 255;
+	time_ms ++; // 8MHz/32 is almost 1 ms
     
     lcd_tick ++; // 1 sec tick
     if(lcd_tick == 999)
         lcd_tick = 0;
     
-    time_s = time_ms/1000; // time in sec
+	time_s = time_ms/1000; // time in sec
+	if(time_s > 30)
+		overtime = 1;
 }
 
 // adc interrupt
@@ -54,7 +54,7 @@ void init(void)
     PORTB = 0x2;
     
     // timer stuff
-    TCCR0 = 0x03; // set prescaler to 64
+    TCCR0 = 0x05; // set prescaler to 1024
     TCNT0 = 0; // set timer count to 0
     TIMSK = 0x01; // unmask timer0 overflow interrupt
     
@@ -66,23 +66,18 @@ int main(void)
     init();
     adc_init();
     lcd_init();
-    lcd_test();
-    _delay_ms(250);
-    _delay_ms(250);
-    _delay_ms(250);
-    _delay_ms(250);
 	while(1)
     {
         // run lcd update every 1 sec
 		if(!lcd_tick)
         {
-            lcd_screen(time_s,time_ms,f,r,s,h,w);
-            PORTB = PORTB^0x2; // flip led
+			lcd_screen(time_s,n,f,r,s,h,w,overtime);
+			PORTB = PORTB^0x2; // flip led
         }
         // do adc data processing if there's new data
-        if(adc_flag)
+        if(adc_flag && (!overtime))
         {
-            adc_process(&adc_data, &n, &r, &s, &h, &f, &w);
+            adc_process(&adc_data, &n, &r, &s, &h, &f, &w, &ts, &te, time_ms);
             adc_flag = 0;
         }
     }
