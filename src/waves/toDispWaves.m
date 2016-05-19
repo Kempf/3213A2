@@ -10,8 +10,8 @@
 %pulse. - This is relevant for power calculations.
 
 
-clear all;
-close all;
+%clear all;
+%close all;
 
 
 % %Wave1 only shows curved pulses.
@@ -112,7 +112,8 @@ close all;
 
 %Differentiation does not work for high signal noise. Needs a new method.
 figure;
-d = 1024 .* csvread('wave4.txt');
+d = csvread('wave4.txt');
+d(:,2) = 200.*d(:,2) + 615;
 subplot(3,1,1);
 plot(d(:,1), d(:,2));
 title('wave4');
@@ -135,12 +136,12 @@ triangles = 0;
 horns = 0;
 data = zeros(1,70);
 start = [];
-for n = 501:1:1500001
+for n = 700:1:1500001
     data(1) = [];
     %disp(size(data));
-    for p = 10:10:200
+    for p = 10:10:640
             q = n - p;
-            w4_int(n) = w4_int(n) + (d(q, 2)^2/(50*td));
+            w4_int(n) = w4_int(n) + (d(q, 2))/64;
     end    
     data(70) = w4_int(n);
     %disp(data)
@@ -191,5 +192,5 @@ end
 p = zeros(length(start));
 start = (start ./ 50) + 50;
 y_1mil = linspace(600000,600000,1499501);
-plot(x_int, w4_int, x_int, y_1mil, 'r--', start, p, 'k*');
+plot(x_int, w4_int,   start, p, 'k*'); %x_int,y_1mil, 'r--',
 title('Integration of wave');
