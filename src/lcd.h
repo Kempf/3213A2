@@ -8,6 +8,6 @@ void lcd_goto(uint8_t addr);
 void lcd_send(uint8_t rs, uint8_t data);
 void lcd_test(void);
 uint8_t lcd_lookup(char symb);
-void lcd_screen(int s, int n, int f, int r, int s, int h, int w);
+void lcd_screen(uint16_t t, uint16_t n, uint16_t f, uint16_t r, uint16_t s, uint16_t h, uint16_t w, uint8_t overtime);
 
 #endif
