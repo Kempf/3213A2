@@ -12,6 +12,8 @@ pc0 - analogue input
 #include <util/delay.h>
 #include "adc.h"
 
+#define ARR 64
+
 // initialize registers etc
 void adc_init(void)
 {
@@ -35,58 +37,80 @@ void adc_process(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t
 	*w = 1488;
 }
 
-void movingAverage(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa /*This is an array. Go figure.*/, uint16_t *circles, uint16_t *triangles, uint16_t *horns, uint16_t *time, uint8_t *oneOver, uint16_t *time_start, uint16_t* time_end)
+void movingAverage(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa /*This is an array. Go figure.*/, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td)
 {
 	//Using a 32 term moving average at the moment. Might be too large.
-	if (count == 32){count = 0;}
-	pa = pa + count;                                        //Sets the pointer to the 'oldest' item in the array
-	*pa = (*sample * *sample);                             //Calculate the 'power' of the current input time, place in array
-	int moving_avg = sum_arr((pa - count), oneOver);       //Calculate the 32 term moving average (this is the previous 32 terms)
+	if (count == ARR - 1){count = 0;}
+	for (uint8_t n = 0; n<count; n++){				//Sets the pointer to the 'oldest' item in the array
+		pa++;
+	}		
+	*pa = (*sample);								//Calculate the 'power' of the current input time, place in array
+	int moving_avg = sum_arr((pa - count));			//Calculate the 32 term moving average (this is the previous 32 terms)
 
-	if (moving_avg > 10000000){                 //Need to find *ACTUAL* threshold values. Or calculate them.
+	if (moving_avg > 740){							//Need to find *ACTUAL* threshold values. Or calculate them.
 	if(*th_latch < 3){
 		*th_latch = 3;
-		*circles += 1;
+		*r += 1;
+		*n += 1;
 	}
     }
-    else if (moving_avg > 5000000){
+    else if (moving_avg > 675){
         if(*th_latch < 2){
             *th_latch = 2;
-            *triangles += 1;
+            *s += 1;
+            *n += 1;
         }
     }
-    else if (moving_avg > 600000){
+    else if (moving_avg > 624){
         if(*th_latch < 1){
             *th_latch = 1;
-            *horns += 1;
+            *h += 1;
+            *n += 1;
+			*time_start = *time;
         }
     }
-    
-    
     //Resets if drops below the lower threshold.
-    if(*oneOver == 0){
+    //Setup like this to allow for power calculations
+    else if(moving_avg < 625){
         if(*th_latch == 3){
             //finish = n;
             *th_latch = 0;
-        }        
+			*time_end = *time;
+			*td = *time_end - *time_start - 9;
+			*w = (((*n - 1)* *w) + *td) * *n;
+			*td = 0;
+			*time_start = 0;
+			*time_end = 0;
+        }
         if(*th_latch == 2){
             //finish = n;
             *th_latch = 0;
+			*time_end = *time;
+			*td = *time_end - *time_start - 9;
+			*w = (((*n - 1) * *w) + *td) * *n;
+			*td = 0;
+			*time_start = 0;
+			*time_end = 0;
         }
         if(*th_latch == 1){
             //finish = n;
             *th_latch = 0;
+			*time_end = *time;
+			*td = *time_end - *time_start - 9;
+			*w = (((*n - 1) * *w) + *td) * *n;
+			*td = 0;
+			*time_start = 0;
+			*time_end = 0;
         }
     }
-    *oneOver = 0;
 }
 
-uint16_t sum_arr(uint16_t *pa, uint8_t *oneOver){
+uint16_t sum_arr(uint16_t *pa){
 	uint16_t sum = 0;
-	for(uint8_t i = 0; i<32; i++){
-		if (*pa > 600000){*oneOver = 1;}
+	for(uint8_t i = 0; i<ARR; i++){
+		/*if (*pa > 600000){*oneOver = 1;}*/
 		sum = sum + *pa;
 		pa++;
 	}
-	return (sum/32);
+	return (sum/ARR);
 }
