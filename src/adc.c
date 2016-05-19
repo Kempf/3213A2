@@ -16,7 +16,7 @@ pc0 - analogue input
 void adc_init(void)
 {
     DDRC = DDRC | 0x1; // set PC0 to input
-    ADMUX = 0b11000000; // select ADC0
+    ADMUX = 0b01000000; // select ADC0
     ADCSRA = 0b11001100; //ADC enabled,/128 divisor, interrupt unmask, conv started
 }
 
