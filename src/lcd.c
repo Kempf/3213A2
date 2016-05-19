@@ -80,7 +80,6 @@ void lcd_send(uint8_t rs, uint8_t data)
 	_delay_ms(1);
     // unset enable, wait
 	PORTC = (rs << 4);
-    PORTD = data;
 	_delay_ms(1);
 }
 
