@@ -9,6 +9,8 @@ pinout:
     
 */
 
+//#define F_CPU 16000000UL
+
 #include <avr/io.h>
 #include <stdio.h>
 #include <util/delay.h>
@@ -25,8 +27,8 @@ uint8_t adc_flag = 0, overtime = 0, th_latch = 0, oneOver = 0;
 // timer interrupt
 ISR(TIMER0_OVF_vect)
 {
-	TCNT0 = 255;
-	time_ms ++; // 8MHz/32 is almost 1 ms
+	TCNT0 = 240;
+	time_ms ++;
     
     lcd_tick ++; // 1 sec tick
     if(lcd_tick == 999)
