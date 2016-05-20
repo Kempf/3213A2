@@ -212,13 +212,14 @@ void lcd_screen(uint16_t t, uint16_t n, uint16_t f, uint16_t r, uint16_t s, uint
 			for(uint8_t c = 0; c < 5; c++)
 				lcd_send(1,lcd_lookup(buffer[c]));
 			lcd_send(1,lcd_lookup(' '));
+			lcd_send(1,lcd_lookup(' '));
 			// horny
 			lcd_send(1,lcd_lookup('H'));
 			lcd_send(1,lcd_lookup(':'));
 			sprintf(buffer,"%5u",h);
 			for(uint8_t c = 0; c < 5; c++)
 				lcd_send(1,lcd_lookup(buffer[c]));
-			lcd_send(1,lcd_lookup(' '));
+			//lcd_send(1,lcd_lookup(' '));
 			break;
 		case 6:
 		case 7:
