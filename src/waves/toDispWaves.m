@@ -15,14 +15,19 @@
 
 
 % %Wave1 only shows curved pulses.
-% a = 1024 .* csvread('wave1.txt');
+% a = csvread('wave2.txt');
+% a(:,2) = 512.*a(:,2) + 420;
 % subplot(3,1,1);
 % plot(a(:,1), a(:,2));
 % title('wave1');
 % subplot(3,1,2);
 % %Differentiation Method
 % td = a(2,1) - a(1,1);
-% dx = a(:,1) + (td/2);
+% dy = zeros(1,150000);
+% for n = 10:10:1500001
+%     dx(n/10) = a(n,1) + (td/2);
+%     dy(n/10) = a(n+1,2) - a((n-10)+1,2);
+% end
 % n = size(a);
 % dx(n(1)) = [];
 % plot(dx, diff(a(:,2)));
@@ -30,10 +35,10 @@
 % subplot(3,1,3);
 % %Integration Method (POWERRRRRRRRRR)
 % w1_int = zeros(n(1),1);
-% for n = 501:1500001
-%     for p = 0:50:500
+% for n = 641:1500001
+%     for p = 5:10:635
 %         q = n - p;
-%         w1_int(n) = w1_int(n) + (a(q, 2)^2/(50*td));
+%         w1_int(n) = w1_int(n) + (a(q, 2))/64;
 %     end
 % end
 % x_int = a(:,1);
@@ -113,19 +118,17 @@
 %Differentiation does not work for high signal noise. Needs a new method.
 figure;
 d = csvread('wave4.txt');
-d(:,2) = 200.*d(:,2) + 615;
-subplot(3,1,1);
+d(:,2) = 450.*d(:,2) + 420;
+subplot(4,1,1);
 plot(d(:,1), d(:,2));
 title('wave4');
-subplot(3,1,2);
+
 td = d(2,1) - d(1,1);
 dx = d(:,1) + (td/2);
 n = size(d);
 dx(n(1)) = [];
-plot(dx, diff(d(:,2)));
-title('differentiation of wave');
 %Integration Method (POWERRRRRRRRRR)
-subplot(3,1,3)
+subplot(4,1,3)
 w4_int = zeros(n(1),1);
 th = 0;
 th_latch = 0;
@@ -136,13 +139,20 @@ triangles = 0;
 horns = 0;
 data = zeros(1,70);
 start = [];
+zero = 0;
 for n = 700:1:1500001
     data(1) = [];
     %disp(size(data));
     for p = 10:10:640
             q = n - p;
             w4_int(n) = w4_int(n) + (d(q, 2))/64;
-    end    
+    end 
+    if (zero == 0)
+        zero = w4_int(n);
+        w4_int(n) = 0;
+    else 
+        w4_int(n) = w4_int(n) - (zero + 20);
+    end
     data(70) = w4_int(n);
     %disp(data)
     if (w4_int(n) > 10000000) 
@@ -194,3 +204,10 @@ start = (start ./ 50) + 50;
 y_1mil = linspace(600000,600000,1499501);
 plot(x_int, w4_int,   start, p, 'k*'); %x_int,y_1mil, 'r--',
 title('Integration of wave');
+
+subplot(4,1,2);
+plot(dx(501:10:1500000), diff(w4_int(1:10:1499501)));
+title('differentiation of wave');
+
+subplot(4,1,4);
+plot(dx(500:1:1500000), w4_int);
