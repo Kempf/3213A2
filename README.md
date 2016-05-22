@@ -4,6 +4,10 @@
 
 [overleaf](https://www.overleaf.com/5154243hxzfnh)
 
+<img src="http://i.imgur.com/UONnE4g.jpg" width="250">
+
+nice report m8 i r8 0/8 ~Nic
+
 ### To Do:
 
 * LCD interface
@@ -15,10 +19,9 @@
 
 Set up your editor/IDE to use 4 spaces as tabs or fite me irl.
 
-* `lcd.c` **[untested]** - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
-* `test.c` **[untested]** - main file to test LCD and ADC functions, also blinks LEDs (killer feature, currently not working)
-* `adc.c` **[untested]** - ADC functions (later - data processing)
-* `waveAnalysis_ausf_a.c` **[explodes]** - Steve's (failed) attempt at coding in C
+* `lcd.c` **[tested]** - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
+* `test.c` **[WIP]** - main file to test LCD and ADC functions, also blinks LEDs (killer feature, currently not working)
+* `adc.c` **[WIP]** - ADC functions (later - data processing)
 * `???.c` **[???]** - ???
 
 ### Lab times:
