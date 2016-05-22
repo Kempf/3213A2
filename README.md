@@ -10,10 +10,9 @@ nice report m8 i r8 0/8 ~Nic
 
 ### To Do:
 
-* LCD interface
-* Clock interrupt and timer
-* ADC interrupt (9375 Hz sample ~ /128 prescaler setting)
-* data processing
+* Recalculate ADC thresholds
+* Test
+* Report
 
 ### Files:
 
