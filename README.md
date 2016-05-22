@@ -18,9 +18,9 @@ nice report m8 i r8 0/8 ~Nic
 
 Set up your editor/IDE to use 4 spaces as tabs or fite me irl.
 
-* `lcd.c` **[tested]** - LCD-related functions: initialize LCD, output shit to LCD, later on some more specific functions. May be.
-* `test.c` **[WIP]** - main file to test LCD and ADC functions, also blinks LEDs (killer feature, currently not working)
-* `adc.c` **[WIP]** - ADC functions (later - data processing)
+* `lcd.c` **[tested]** - LCD-related functions: initialize LCD, output shit to LCD.
+* `test.c` **[WIP]** - main file, also blinks LEDs (killer feature)
+* `adc.c` **[WIP]** - ADC init and data processing
 * `???.c` **[???]** - ???
 
 ### Lab times:
