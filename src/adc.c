@@ -3,6 +3,12 @@ adc.c for ADC-related functions
 10/10 Absolute masterpiece
     - IGN
 
+This code: 9/10
+This code with rice: 10/10
+Thankyou for your suggestion
+	-  DO_U_EVN_SPAGHETTI
+    
+
 pins to note:
 pc0 - analogue input
 */
@@ -18,6 +24,9 @@ pc0 - analogue input
 
 //Peak around 869
 //Baseline 420
+
+
+// I made line 122 references to zero -> *zero
 
 
 
@@ -60,18 +69,23 @@ void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *
 	pa += *count*2;		//Sets the pointer to the 'oldest' item in the array
 	*pa = (sample);								//Calculate the 'power' of the current input time, place in array
 	int moving_avg = sum_arr((pa - *count*2));			//Calculate the 32 term moving average (this is the previous 32 terms)
+	if (moving_avg < *zero){
+		moving_avg = 0;
+	} else {
+		moving_avg = moving_avg - *zero;
+	}
 	*f = moving_avg; // temporary average output
-	if (moving_avg > 540){							//Need to find *ACTUAL* threshold values. Or calculate them.
+	if (moving_avg > 209){							//Need to find *ACTUAL* threshold values. Or calculate them.
 	if(*th_latch < 3){
 		*th_latch = 3;
 	}
     }
-    else if (moving_avg > 475){
+    else if ((moving_avg < 210) && (zero != 0)){
         if(*th_latch < 2){
             *th_latch = 2;
         }
     }
-    else if (moving_avg > 440){
+    else if ((moving_avg < 80) && (moving_avg > 40) && (zero != 0)){
         if(*th_latch < 1){
             *th_latch = 1;
 			*time_start = *time;
@@ -79,7 +93,7 @@ void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *
     }
     //Resets if drops below the lower threshold.
     //Setup like this to allow for power calculations
-    else if(moving_avg < 425){
+    else if((moving_avg < 20) && (zero != 0)){
         if(*th_latch == 3){
             //finish = n;
 			*r += 1;
@@ -119,8 +133,8 @@ void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *
     }
     // reset count if at the end of the array
 	if (*count == ARR - 1)
-        if(!zero)
-            zero = moving_avg; // set threshold value on first runthrough
+        if(!*zero)
+            *zero = moving_avg; // set threshold value on first runthrough
         *count = 0;
     else
         *count++;
