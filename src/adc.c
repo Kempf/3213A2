@@ -47,18 +47,20 @@ void adc_test(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h
 	*w = *data;
 }
 
-void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa /*This is an array. Go figure.*/, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td)
+void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td, uint16_t *zero)
 {	
+
+    // TODO: add integration
+    //       recalculate thresholds for offset zero levels
+
+    // offset zero:
+    sample -= *zero;
+    
 	//Using a 32 term moving average at the moment. Might be too large.
-	/*for (uint8_t n = 0; n<*count; n++){				//Sets the pointer to the 'oldest' item in the array
-		pa++;
-		pa++;
-	}*/
-	pa += *count*2;		
-	*pa = (*sample);								//Calculate the 'power' of the current input time, place in array
+	pa += *count*2;		//Sets the pointer to the 'oldest' item in the array
+	*pa = (sample);								//Calculate the 'power' of the current input time, place in array
 	int moving_avg = sum_arr((pa - *count*2));			//Calculate the 32 term moving average (this is the previous 32 terms)
-	*f = moving_avg;
-	//int moving_avg = *sample;
+	*f = moving_avg; // temporary average output
 	if (moving_avg > 540){							//Need to find *ACTUAL* threshold values. Or calculate them.
 	if(*th_latch < 3){
 		*th_latch = 3;
@@ -115,18 +117,14 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 			*time_end = 0;
         }
     }
-	if (*count == ARR - 1){*count = 0;}else{*count++;}
+    // reset count if at the end of the array
+	if (*count == ARR - 1)
+        if(!zero)
+            zero = moving_avg; // set threshold value on first runthrough
+        *count = 0;
+    else
+        *count++;
 }
-
-/*uint16_t sum_arr(uint16_t *pa){
-	uint16_t sum = 0;
-	for(uint8_t i = 0; i<ARR; i++){
-		/*if (*pa > 600000){*oneOver = 1;}
-		sum = sum + *pa;
-		pa+=2;
-	}
-	return (uint16_t)(sum/ARR);
-}*/
 
 uint16_t sum_arr(uint16_t a[])
 {

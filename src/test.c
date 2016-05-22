@@ -21,7 +21,7 @@ pinout:
 #define ARR 64
 
 uint16_t time_ms = 0, time_s = 0, lcd_tick = 0, td = 0, adc_data = 0;
-uint16_t n = 0, r = 0, s = 0, h = 0, f = 0, w = 0, ts = 0, te = 0, count = 0, adc_array[ARR];
+uint16_t n = 0, r = 0, s = 0, h = 0, f = 0, w = 0, ts = 0, te = 0, count = 0, adc_array[ARR], zero = 0;
 uint8_t adc_flag = 0, overtime = 0, th_latch = 0, oneOver = 0;
 
 // timer interrupt
@@ -81,7 +81,7 @@ int main(void)
         // do adc data processing if there's new data
         if(adc_flag && (!overtime))
         {
-            adc_process(&adc_data, &th_latch, &count, adc_array, &r, &s, &h, &n, &time_ms, &ts, &te, &f, &w, &td);
+            adc_process(adc_data, &th_latch, &count, adc_array, &r, &s, &h, &n, &time_ms, &ts, &te, &f, &w, &td);
             //adc_test(&adc_data, &n, &r, &s, &h, &f, &w, &ts, &te, time_ms);
             adc_flag = 0;
         }
