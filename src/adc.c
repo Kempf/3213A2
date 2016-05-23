@@ -2,13 +2,11 @@
 adc.c for ADC-related functions
 10/10 Absolute masterpiece
     - IGN
-
 This code: 9/10
 This code with rice: 10/10
 Thankyou for your suggestion
 	-  DO_U_EVN_SPAGHETTI
     
-
 pins to note:
 pc0 - analogue input
 */
@@ -56,44 +54,48 @@ void adc_test(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h
 	*w = *data;
 }
 
-void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td, uint16_t *zero)
+void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td, uint16_t *zero)
 {	
 
     // TODO: add integration
     //       recalculate thresholds for offset zero levels
-
     // offset zero:
-    sample -= *zero;
-    
+    //*sample -= *zero;
+	*f = *zero;
 	//Using a 32 term moving average at the moment. Might be too large.
-	pa += *count*2;		//Sets the pointer to the 'oldest' item in the array
-	*pa = (sample);								//Calculate the 'power' of the current input time, place in array
-	int moving_avg = sum_arr((pa - *count*2));			//Calculate the 32 term moving average (this is the previous 32 terms)
+	pa += 2**count;											//Sets the pointer to the 'oldest' item in the array
+	*pa = (*sample);									//Calculate the 'power' of the current input time, place in array
+	int moving_avg = sum_arr((pa - *count*2))/ARR;			//Calculate the 32 term moving average (this is the previous 32 terms)					//Work out why having this as 2 doesn't work. (Multiplied by)
+	*w = moving_avg;
 	if (moving_avg < *zero){
 		moving_avg = 0;
 	} else {
 		moving_avg = moving_avg - *zero;
 	}
-	*f = moving_avg; // temporary average output
-	if (moving_avg > 209){							//Need to find *ACTUAL* threshold values. Or calculate them.
-	if(*th_latch < 3){
-		*th_latch = 3;
-	}
+	//*w = moving_avg;
+	//*f = moving_avg;
+	//*f = *zero;										// temporary average output
+	if ((moving_avg > 150) && (*zero != 0)){							//Need to find *ACTUAL* threshold values. Or calculate them.
+		if(*th_latch < 3){
+			*th_latch = 3;
+		}
     }
-    else if ((moving_avg < 210) && (zero != 0)){
+    else if ((moving_avg > 70) && (*zero != 0)){
         if(*th_latch < 2){
             *th_latch = 2;
         }
     }
-    else if ((moving_avg < 80) && (moving_avg > 40) && (zero != 0)){
+    else if ((moving_avg > 40) && (*zero != 0)){
         if(*th_latch < 1){
             *th_latch = 1;
 			*time_start = *time;
         }
-    }
+	}  
+	
+	
     //Resets if drops below the lower threshold.
     //Setup like this to allow for power calculations
-    else if((moving_avg < 20) && (zero != 0)){
+    else if((moving_avg < 20)){
         if(*th_latch == 3){
             //finish = n;
 			*r += 1;
@@ -101,7 +103,7 @@ void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *
             *th_latch = 0;
 			*time_end = *time;
 			*td = *time_end - *time_start - 9;
-			*w = (((*n - 1)* *w) + *td) * *n;
+			//*w = (((*n - 1)* *w) + *td) * *n;
 			*td = 0;
 			*time_start = 0;
 			*time_end = 0;
@@ -113,7 +115,7 @@ void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *
             *th_latch = 0;
 			*time_end = *time;
 			*td = *time_end - *time_start - 9;
-			*w = (((*n - 1) * *w) + *td) * *n;
+			//*w = (((*n - 1) * *w) + *td) * *n;
 			*td = 0;
 			*time_start = 0;
 			*time_end = 0;
@@ -125,19 +127,24 @@ void adc_process(uint16_t sample, uint8_t *th_latch, uint16_t *count, uint16_t *
             *th_latch = 0;
 			*time_end = *time;
 			*td = *time_end - *time_start - 9;
-			*w = (((*n - 1) * *w) + *td) * *n;
+			//*w = (((*n - 1) * *w) + *td) * *n;
 			*td = 0;
 			*time_start = 0;
 			*time_end = 0;
         }
     }
-    // reset count if at the end of the array
-	if (*count == ARR - 1)
-        if(!*zero)
-            *zero = moving_avg; // set threshold value on first runthrough
-        *count = 0;
-    else
-        *count++;
+
+		    // reset count if at the end of the array
+	if (*count == ARR - 1){
+		if(*zero == 0){
+			*zero = moving_avg;
+		} // set threshold value on first runthrough
+		*count = 0;
+	}else{
+		*count = *count + 1;	//DON'T SET IT TO COUNT++. THIS WILL BREAK EVERYTHING.
+	}
+	
+			
 }
 
 uint16_t sum_arr(uint16_t a[])
