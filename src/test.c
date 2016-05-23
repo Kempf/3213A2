@@ -42,8 +42,9 @@ ISR(TIMER0_OVF_vect)
 // adc interrupt
 ISR(ADC_vect)
 {
-    if(adc_flag)
+    if(adc_flag){
         PORTB = PORTB | 0x1;
+	}		
     adc_data = ADCW; // save data
     adc_flag = 1; // set processing flag
     ADCSRA = ADCSRA | 0x40; // ADSC to 1 to start conv
@@ -81,7 +82,7 @@ int main(void)
         // do adc data processing if there's new data
         if(adc_flag && (!overtime))
         {
-            adc_process(adc_data, &th_latch, &count, adc_array, &r, &s, &h, &n, &time_ms, &ts, &te, &f, &w, &td);
+            adc_process(&adc_data, &th_latch, &count, adc_array, &r, &s, &h, &n, &time_ms, &ts, &te, &f, &w, &td, &zero);
             //adc_test(&adc_data, &n, &r, &s, &h, &f, &w, &ts, &te, time_ms);
             adc_flag = 0;
         }
