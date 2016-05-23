@@ -14,6 +14,21 @@
 %close all;
 
 
+
+%THRESHOLDS:
+%Upper: 45000
+%Middle: 20000 (This has a lot of room)
+%Lower ~2000
+%These are based off 16 term moving average, halving the value, then
+%squaring it. (Else will need 32bit integers)
+%w4_div should be a signed int
+
+%If the above fails, need to look into differentiation a bit more.
+%See code below for the details of it.
+
+
+
+
 % %Wave1 only shows curved pulses.
 % a = csvread('wave2.txt');
 % a(:,2) = 512.*a(:,2) + 420;
@@ -118,6 +133,7 @@
 %Differentiation does not work for high signal noise. Needs a new method.
 figure;
 d = csvread('wave4.txt');
+d = d(1:10:1500001, :);
 d(:,2) = 450.*d(:,2) + 420;
 subplot(4,1,1);
 plot(d(:,1), d(:,2));
@@ -130,6 +146,7 @@ dx(n(1)) = [];
 %Integration Method (POWERRRRRRRRRR)
 subplot(4,1,3)
 w4_int = zeros(n(1),1);
+w4_div = zeros(n(1),1);
 th = 0;
 th_latch = 0;
 start = 0;
@@ -140,18 +157,35 @@ horns = 0;
 data = zeros(1,70);
 start = [];
 zero = 0;
-for n = 700:1:1500001
+for n = 700:1:150001
     data(1) = [];
     %disp(size(data));
-    for p = 10:10:640
+    for p = 1:1:16
             q = n - p;
-            w4_int(n) = w4_int(n) + (d(q, 2))/64;
+            w4_int(n) = w4_int(n) + (d(q, 2))/16;
     end 
+    for p = 1:1:8
+            q = n - p;
+            w4_div(n) = w4_div(n) + (d(q, 2))/8;
+    end 
+    
     if (zero == 0)
         zero = w4_int(n);
         w4_int(n) = 0;
+        w4_div(n) = 0;
     else 
-        w4_int(n) = w4_int(n) - (zero + 20);
+        if (w4_int(n) < zero)
+            w4_int(n) = 0;
+        else
+            w4_int(n) = w4_int(n) - (zero);
+            w4_int(n) = (w4_int(n)/2)^2;
+        end
+        if (w4_div(n) < zero + 70)
+            w4_div(n) = 0;
+        else
+            w4_div(n) = w4_div(n) - (zero);
+            w4_div(n) = (w4_div(n));
+        end
     end
     data(70) = w4_int(n);
     %disp(data)
@@ -198,16 +232,17 @@ x_int = d(:,1);
 for n = 500:-1:1
    x_int(n) = []; 
    w4_int(n) = [];
+   w4_div(n) = [];
 end
 p = zeros(length(start));
 start = (start ./ 50) + 50;
-y_1mil = linspace(600000,600000,1499501);
+y_1mil = linspace(600000,600000,149501);
 plot(x_int, w4_int,   start, p, 'k*'); %x_int,y_1mil, 'r--',
 title('Integration of wave');
 
 subplot(4,1,2);
-plot(dx(501:10:1500000), diff(w4_int(1:10:1499501)));
+plot(dx(501:1:150000), diff(w4_div(1:1:149501)));
 title('differentiation of wave');
 
 subplot(4,1,4);
-plot(dx(500:1:1500000), w4_int);
+plot(dx(500:1:150000), w4_div);
