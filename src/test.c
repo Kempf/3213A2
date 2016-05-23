@@ -18,7 +18,7 @@ pinout:
 #include "lcd.h"
 #include "adc.h"
 
-#define ARR 64
+#define ARR 16
 
 uint16_t time_ms = 0, time_s = 0, lcd_tick = 0, td = 0, adc_data = 0;
 uint16_t n = 0, r = 0, s = 0, h = 0, f = 0, w = 0, ts = 0, te = 0, count = 0, adc_array[ARR], zero = 0;
