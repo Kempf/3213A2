@@ -6,6 +6,9 @@ This code: 9/10
 This code with rice: 10/10
 Thankyou for your suggestion
 	-  DO_U_EVN_SPAGHETTI
+	
+Gud jerbbbb, bud jerbbbbb!
+	- Everyone
     
 pins to note:
 pc0 - analogue input
@@ -48,24 +51,19 @@ void adc_test(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h
 {
 	*r = 88;
 	*n = *data;
-    	*s = *data;
-    	*h = 69;
-    	*f = 1377; // just for testing
+    *s = *data;
+    *h = 69;
+    *f = 1377; // just for testing
 	*w = *data;
 }
 
-void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint32_t *f, uint32_t *w, uint16_t *td, uint16_t *zero, uint8_t *toggle)
+void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint32_t *f, uint32_t *w, uint16_t *td, uint16_t *zero, uint8_t *toggle, uint32_t *int_total, uint16_t *peak)
 {	
 	uint16_t comparator = 0;
-    // TODO: add integration
-    //       recalculate thresholds for offset zero levels
-    // offset zero:
-    //*sample -= *zero;
-	//Using a 32 term moving average at the moment. Might be too large.																//I removed a 2* multiplier here
-	pa += *count;											//Sets the pointer to the 'oldest' item in the array
-	*pa = (*sample);									//Calculate the 'power' of the current input time, place in array
-	int moving_avg = sum_arr((pa - *count))/ARR;						//Calculate the 32 term moving average (this is the previous 32 terms)					//Work out why having this as 2 doesn't work. (Multiplied by)
-	//*w = moving_avg;
+	//Using a 32 term moving average at the moment. Might be too large.																
+	pa += *count;														//Sets the pointer to the 'oldest' item in the array
+	*pa = (*sample);													//Calculate the 'power' of the current input time, place in array
+	int moving_avg = sum_arr((pa - *count))/ARR;						//Calculate the 32 term moving average (this is the previous 32 terms)					
 	if (moving_avg < *zero){
 		moving_avg = 0;
 		comparator = 0;
@@ -74,16 +72,8 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 		comparator = (uint16_t)((moving_avg/2) * (moving_avg/2));
 		//*w = comparator;
 	}
-	//*w = moving_avg;
-	//*w = moving_avg;
-	//*f = moving_avg;
-	//*f = *zero;										// temporary average output
-	if ((comparator > 50000) && (*zero != 0)){							//Need to find *ACTUAL* threshold values. Or calculate them.
-		if(*th_latch < 3){
-			*th_latch = 3;
-		}
-    }
-    else if ((comparator > 20000) && (*zero != 0)){
+
+    if ((comparator > 20000) && (*zero != 0)){
         if(*th_latch < 2){
             *th_latch = 2;
         }
@@ -95,38 +85,31 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
         }
 	}  
 	
+	if (*th_latch){
+		*int_total += comparator;
+		if(comparator > *peak)
+		{
+			*peak = comparator;
+		}
+	}	
+	
+	
 	
     //Resets if drops below the lower threshold.
     //Setup like this to allow for power calculations
     else if((comparator < 2000)){
-        if(*th_latch == 3){
-            //finish = n;
-			*r += 1;
-			*n += 1;
-            *th_latch = 0;
-			*time_end = *time;
-			*td = (*time_end - *time_start)*100;
-			//*w = *td;
-			*w = ((((*n - 1)* *w) + *td) / *n);
-			*td = 0;
-			*time_start = 0;
-			*time_end = 0;
-        }
         if(*th_latch == 2){
-            //finish = n;
 			*s += 1;
-            *n += 1;
-            *th_latch = 0;
 			*time_end = *time;
-			*td = (*time_end - *time_start)*100;
-			//*w = *td;
-			*w = ((((*n - 1) * *w) + *td) / *n);
-			*td = 0;
-			*time_start = 0;
-			*time_end = 0;
+			*td = (*time_end - *time_start);
+			if(ideal_tri(*peak, *td) > *int_total){
+				*r += 1;
+			} else{
+				*s+=1;
+			}
+            *n += 1;
         }
         if(*th_latch == 1){
-            //finish = n;
 			if(*toggle == 1){
 				*h += 1;
 				*n += 1;
@@ -134,16 +117,18 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 			} else {
 				*toggle = 1;
 			}			
-            *th_latch = 0;
 			*time_end = *time;
-			*td = (*time_end - *time_start)*100;
-			//*w = *td;
-			*w = ((((*n - 1) * *w) + *td) / *n);
+			*td = (*time_end - *time_start);		
+        }
+		if(*th_latch){
+			*th_latch = 0;
+			*peak = 0;
+			*int_total = 0;
+			*w = ((((*n - 1) * *w) + (*td*100)) / *n);
 			*td = 0;
 			*time_start = 0;
-			*time_end = 0;
-			
-        }
+			*time_end = 0;	
+		}
 		*f = *n * 100000 / *time;
     }
 
@@ -160,12 +145,17 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 			
 }
 
-uint16_t sum_arr(uint16_t a[])
-{
+uint16_t sum_arr(uint16_t a[]){
 	int i, sum=0;
 	for (i=0; i<ARR; i++)
 	{
 		sum = sum + a[i];
 	}
 	return (uint16_t)(sum);
+}
+
+
+//Computes the area of an ideal triangle based on width and height.
+uint32_t ideal_tri(uint16_t peak, uint16_t td){
+	return (uint32_t)(((peak/2)*(peak/2)) * td) / 2;
 }
