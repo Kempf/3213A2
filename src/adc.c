@@ -54,14 +54,13 @@ void adc_test(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h
 	*w = *data;
 }
 
-void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td, uint16_t *zero)
+void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint32_t *f, uint32_t *w, uint16_t *td, uint16_t *zero, uint8_t *toggle)
 {	
 	uint16_t comparator = 0;
     // TODO: add integration
     //       recalculate thresholds for offset zero levels
     // offset zero:
     //*sample -= *zero;
-	*f = *zero;
 	//Using a 32 term moving average at the moment. Might be too large.																//I removed a 2* multiplier here
 	pa += *count;											//Sets the pointer to the 'oldest' item in the array
 	*pa = (*sample);									//Calculate the 'power' of the current input time, place in array
@@ -73,18 +72,18 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 	} else {
 		moving_avg = moving_avg - *zero;
 		comparator = (uint16_t)((moving_avg/2) * (moving_avg/2));
-		*w = comparator;
+		//*w = comparator;
 	}
 	//*w = moving_avg;
 	//*w = moving_avg;
 	//*f = moving_avg;
 	//*f = *zero;										// temporary average output
-	if ((comparator > 16000) && (*zero != 0)){							//Need to find *ACTUAL* threshold values. Or calculate them.
+	if ((comparator > 50000) && (*zero != 0)){							//Need to find *ACTUAL* threshold values. Or calculate them.
 		if(*th_latch < 3){
 			*th_latch = 3;
 		}
     }
-    else if ((comparator > 8000) && (*zero != 0)){
+    else if ((comparator > 20000) && (*zero != 0)){
         if(*th_latch < 2){
             *th_latch = 2;
         }
@@ -106,8 +105,9 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 			*n += 1;
             *th_latch = 0;
 			*time_end = *time;
-			*td = *time_end - *time_start - 9;
-			//*w = (((*n - 1)* *w) + *td) * *n;
+			*td = (*time_end - *time_start)*100;
+			//*w = *td;
+			*w = ((((*n - 1)* *w) + *td) / *n);
 			*td = 0;
 			*time_start = 0;
 			*time_end = 0;
@@ -118,24 +118,33 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
             *n += 1;
             *th_latch = 0;
 			*time_end = *time;
-			*td = *time_end - *time_start - 9;
-			//*w = (((*n - 1) * *w) + *td) * *n;
+			*td = (*time_end - *time_start)*100;
+			//*w = *td;
+			*w = ((((*n - 1) * *w) + *td) / *n);
 			*td = 0;
 			*time_start = 0;
 			*time_end = 0;
         }
         if(*th_latch == 1){
             //finish = n;
-			*h += 1;
-			*n += 1;
+			if(*toggle == 1){
+				*h += 1;
+				*n += 1;
+				*toggle = 0;	
+			} else {
+				*toggle = 1;
+			}			
             *th_latch = 0;
 			*time_end = *time;
-			*td = *time_end - *time_start - 9;
-			//*w = (((*n - 1) * *w) + *td) * *n;
+			*td = (*time_end - *time_start)*100;
+			//*w = *td;
+			*w = ((((*n - 1) * *w) + *td) / *n);
 			*td = 0;
 			*time_start = 0;
 			*time_end = 0;
+			
         }
+		*f = *n * 100000 / *time;
     }
 
 		    // reset count if at the end of the array
