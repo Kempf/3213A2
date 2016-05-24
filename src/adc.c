@@ -56,7 +56,7 @@ void adc_test(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h
 
 void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint16_t *f, uint16_t *w, uint16_t *td, uint16_t *zero)
 {	
-
+	uint16_t comparator = 0;
     // TODO: add integration
     //       recalculate thresholds for offset zero levels
     // offset zero:
@@ -66,27 +66,30 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 	pa += *count;											//Sets the pointer to the 'oldest' item in the array
 	*pa = (*sample);									//Calculate the 'power' of the current input time, place in array
 	int moving_avg = sum_arr((pa - *count))/ARR;						//Calculate the 32 term moving average (this is the previous 32 terms)					//Work out why having this as 2 doesn't work. (Multiplied by)
-	*w = moving_avg;
+	//*w = moving_avg;
 	if (moving_avg < *zero){
 		moving_avg = 0;
+		comparator = 0;
 	} else {
 		moving_avg = moving_avg - *zero;
-		moving_avg = (moving_avg/2)^2
+		comparator = (uint16_t)((moving_avg/2) * (moving_avg/2));
+		*w = comparator;
 	}
+	//*w = moving_avg;
 	//*w = moving_avg;
 	//*f = moving_avg;
 	//*f = *zero;										// temporary average output
-	if ((moving_avg > 45000) && (*zero != 0)){							//Need to find *ACTUAL* threshold values. Or calculate them.
+	if ((comparator > 16000) && (*zero != 0)){							//Need to find *ACTUAL* threshold values. Or calculate them.
 		if(*th_latch < 3){
 			*th_latch = 3;
 		}
     }
-    else if ((moving_avg > 200000) && (*zero != 0)){
+    else if ((comparator > 8000) && (*zero != 0)){
         if(*th_latch < 2){
             *th_latch = 2;
         }
     }
-    else if ((moving_avg > 2000) && (*zero != 0)){
+    else if ((comparator > 2000) && (*zero != 0)){
         if(*th_latch < 1){
             *th_latch = 1;
 			*time_start = *time;
@@ -96,7 +99,7 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 	
     //Resets if drops below the lower threshold.
     //Setup like this to allow for power calculations
-    else if((moving_avg < 2000)){
+    else if((comparator < 2000)){
         if(*th_latch == 3){
             //finish = n;
 			*r += 1;
