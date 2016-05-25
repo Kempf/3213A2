@@ -79,7 +79,7 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 	}
 	//*w = (uint16_t)((moving_avg/2) * (moving_avg/2));
 
-    if ((comparator > 30000) && (*zero != 0)){
+    if ((comparator > 20000) && (*zero != 0)){
         if(*th_latch < 2){
             *th_latch = 2;
         }
@@ -165,5 +165,5 @@ uint16_t sum_arr(uint16_t a[]){
 
 //Computes the area of an ideal triangle based on width and height.
 uint32_t ideal_tri(uint32_t peak, uint32_t counts){
-	return (uint32_t)((peak * counts) / 2);
+	return (uint32_t)((peak * counts)*113 / 200);
 }
