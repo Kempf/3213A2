@@ -29,7 +29,10 @@ pc0 - analogue input
 
 // I made line 122 references to zero -> *zero
 
-
+// Wave 1 : 90R - 90
+//Wave 2: 27R 57S 52H -136
+// Wave 3: 22R 37S 33H  - 92
+//Wave 4: 22R 27S 33H - T82
 
 #include <stdio.h>
 #include <avr/io.h>
@@ -37,6 +40,7 @@ pc0 - analogue input
 #include "adc.h"
 
 #define ARR 16
+//#define F_CPU = 16000000
 
 // initialize registers etc
 void adc_init(void)
@@ -57,9 +61,11 @@ void adc_test(uint16_t *data, uint16_t *n, uint16_t *r, uint16_t *s, uint16_t *h
 	*w = *data;
 }
 
-void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint32_t *f, uint32_t *w, uint16_t *td, uint16_t *zero, uint8_t *toggle, uint32_t *int_total, uint16_t *peak)
+void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t *pa, uint16_t *r, uint16_t *s, uint16_t *h, uint16_t *n, uint16_t *time, uint16_t *time_start, uint16_t *time_end, uint32_t *f, uint32_t *w, uint16_t *td, uint16_t *zero, uint8_t *toggle, uint32_t *int_total, uint32_t *peak, uint32_t *total_samples)
 {	
-	uint16_t comparator = 0;
+	if(*th_latch > 0){*total_samples += 1;} else {*total_samples = 0;}
+	
+	uint32_t comparator = 0;
 	//Using a 32 term moving average at the moment. Might be too large.																
 	pa += *count;														//Sets the pointer to the 'oldest' item in the array
 	*pa = (*sample);													//Calculate the 'power' of the current input time, place in array
@@ -70,8 +76,8 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 	} else {
 		moving_avg = moving_avg - *zero;
 		comparator = (uint16_t)((moving_avg/2) * (moving_avg/2));
-		//*w = comparator;
 	}
+	//*w = (uint16_t)((moving_avg/2) * (moving_avg/2));
 
     if ((comparator > 20000) && (*zero != 0)){
         if(*th_latch < 2){
@@ -84,8 +90,9 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 			*time_start = *time;
         }
 	}  
+	//*w = *sample;
 	
-	if (*th_latch){
+	if (*th_latch>0){
 		*int_total += comparator;
 		if(comparator > *peak)
 		{
@@ -97,15 +104,16 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 	
     //Resets if drops below the lower threshold.
     //Setup like this to allow for power calculations
-    else if((comparator < 2000)){
+    if((comparator < 2000)){
         if(*th_latch == 2){
-			*s += 1;
 			*time_end = *time;
 			*td = (*time_end - *time_start);
-			if(ideal_tri(*peak, *td) > *int_total){
-				*r += 1;
+			//*w = ideal_tri(*peak, *total_samples);
+			//*f = *int_total;
+			if(ideal_tri(*peak, *total_samples) > *int_total){
+				*s += 1;
 			} else{
-				*s+=1;
+				*r+=1;
 			}
             *n += 1;
         }
@@ -156,6 +164,6 @@ uint16_t sum_arr(uint16_t a[]){
 
 
 //Computes the area of an ideal triangle based on width and height.
-uint32_t ideal_tri(uint16_t peak, uint16_t td){
-	return (uint32_t)(((peak/2)*(peak/2)) * td) / 2;
+uint32_t ideal_tri(uint32_t peak, uint32_t counts){
+	return (uint32_t)((peak * counts) / 2);
 }
