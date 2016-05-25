@@ -1,5 +1,8 @@
 /*
 lcd.c for all things LCD-related
+
+Group 42
+
 pinout:
     pc4 rs
     pc5 enable
@@ -7,6 +10,7 @@ pinout:
     pd1 d6
     ...
     pd7 d0
+	
 commands: http://goo.gl/WheZ8n
 charset: http://goo.gl/872aBz
 */
@@ -16,7 +20,7 @@ charset: http://goo.gl/872aBz
 #include <util/delay.h>
 #include "lcd.h"
 
-// really, fuck the guy who wired the data bus backwards
+// who's idea was it to wire the LCD data wires backwards?
 static const uint8_t reverse[] =
 {
 	0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0,
@@ -43,7 +47,7 @@ void lcd_init(void)
     // set up registers
 	DDRC = DDRC | 0b00110000; // pc4 rs, pc5 enable
 	DDRD = DDRD | 0xFF; // data
-	_delay_ms(15); //wait for power up
+	_delay_ms(15); // wait for power up
 	
 	//initialisation of LCD screen
 	lcd_send(0,0b00011100); // function set (5x7 dot format, 2 line mode, 8-bit data)
@@ -135,7 +139,7 @@ uint8_t lcd_lookup(char symb)
     }
 }
 
-// outputs first stat screen
+// outputs stats screen
 void lcd_screen(uint16_t t, uint16_t n, uint16_t f, uint16_t r, uint16_t s, uint16_t h, uint16_t w, uint8_t overtime)
 {
     char buffer[5];
@@ -150,7 +154,6 @@ void lcd_screen(uint16_t t, uint16_t n, uint16_t f, uint16_t r, uint16_t s, uint
 		case 2:
 			// output time
 			lcd_goto(0);
-			//lcd_clear();
 			lcd_send(1,lcd_lookup('T'));
 			lcd_send(1,lcd_lookup(':'));
 			sprintf(buffer,"%5u",t);
@@ -189,7 +192,6 @@ void lcd_screen(uint16_t t, uint16_t n, uint16_t f, uint16_t r, uint16_t s, uint
 		case 5:
 			// output time
 			lcd_goto(0);
-			//lcd_clear();
 			lcd_send(1,lcd_lookup('T'));
 			lcd_send(1,lcd_lookup(':'));
 			sprintf(buffer,"%5u",t);
@@ -226,7 +228,6 @@ void lcd_screen(uint16_t t, uint16_t n, uint16_t f, uint16_t r, uint16_t s, uint
 		case 8:
 			// output time
 			lcd_goto(0);
-			//lcd_clear();
 			lcd_send(1,lcd_lookup('T'));
 			lcd_send(1,lcd_lookup(':'));
 			sprintf(buffer,"%5u",t);
