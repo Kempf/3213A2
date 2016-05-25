@@ -48,9 +48,7 @@ void adc_process(uint16_t *pa)
 	
 	// threshold latches
     if ((comparator > 20000) && (zero != 0)){
-        if(th_latch < 2){
-            th_latch = 2;
-        }
+        th_latch = 2;
     }
     else if ((comparator > 2000) && (zero != 0)){
         if(th_latch < 1){
@@ -86,12 +84,12 @@ void adc_process(uint16_t *pa)
 			if(toggle == 1){
 				h += 1;
 				n += 1;
-				toggle = 0;	
+				toggle = 0;
+				time_end = time_ms;
+			    td = (time_end - time_start);	
 			} else {
 				toggle = 1;
 			}			
-			time_end = time_ms;
-			td = (time_end - time_start);		
         }
 		// reset everything
 		if(th_latch){
