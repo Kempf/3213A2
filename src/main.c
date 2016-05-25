@@ -23,7 +23,7 @@ pinout:
 uint32_t w = 0, f = 0, int_total = 0, peak = 0, total_samples = 0;
 uint16_t time_ms = 0, time_s = 0, lcd_tick = 0, td = 0, adc_data = 0;
 uint16_t n = 0, r = 0, s = 0, h = 0, ts = 0, te = 0, count = 0, adc_array[ARR], zero = 0;
-uint8_t adc_flag = 0, overtime = 0, th_latch = 0, oneOver = 0, toggle = 0;
+uint8_t adc_flag = 0, overtime = 0, th_latch = 0, oneOver = 0, toggle = 1;
 
 // timer interrupt
 ISR(TIMER0_OVF_vect)
