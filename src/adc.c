@@ -30,7 +30,7 @@ pc0 - analogue input
 // I made line 122 references to zero -> *zero
 
 // Wave 1 : 90R - 90
-//Wave 2: 27R 57S 52H -136
+//Wave 2: 27R 58S 52H -137
 // Wave 3: 22R 37S 33H  - 92
 //Wave 4: 22R 27S 33H - T82
 
@@ -79,7 +79,7 @@ void adc_process(uint16_t *sample, uint8_t *th_latch, uint16_t *count, uint16_t 
 	}
 	//*w = (uint16_t)((moving_avg/2) * (moving_avg/2));
 
-    if ((comparator > 20000) && (*zero != 0)){
+    if ((comparator > 30000) && (*zero != 0)){
         if(*th_latch < 2){
             *th_latch = 2;
         }
