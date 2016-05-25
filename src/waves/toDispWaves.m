@@ -132,7 +132,7 @@
 
 %Differentiation does not work for high signal noise. Needs a new method.
 figure;
-d = csvread('wave4.txt');
+d = csvread('wave3.txt');
 d = d(1:10:1500001, :);
 d(:,2) = 450.*d(:,2) + 420;
 subplot(4,1,1);
