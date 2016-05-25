@@ -86,7 +86,7 @@ void adc_process(uint16_t *pa)
 				n += 1;
 				toggle = 0;
 				time_end = time_ms;
-			    td = (time_end - time_start);	
+			    td = 2* (time_end - time_start);	
 			} else {
 				toggle = 1;
 			}			
