@@ -74,10 +74,13 @@ void adc_process(uint16_t *pa)
 			td = (time_end - time_start) + 2;
 			if(ideal_tri(peak, total_samples) > int_total){
 				s += 1;
+				td += 4;
 			} else{
 				r+=1;
 			}
             n += 1;
+			// calculate avg width
+			w = ((((n - 1) * w) + (td * 100)) / n);
         }
 		// H shape
         if(th_latch == 1){
@@ -86,7 +89,9 @@ void adc_process(uint16_t *pa)
 				n += 1;
 				toggle = 0;
 				time_end = time_ms;
-			    td = 3* (time_end - time_start);	
+			    td = 5*(time_end - time_start)-1;
+				// calculate avg width
+				w = ((((n - 1) * w) + (td * 100)) / n);	
 			} else {
 				toggle = 1;
 			}			
@@ -96,8 +101,6 @@ void adc_process(uint16_t *pa)
 			th_latch = 0;
 			peak = 0;
 			int_total = 0;
-			// calculate avg width
-			w = ((((n - 1) * w) + (td * 100)) / n);
 			td = 0;
 			time_start = 0;
 			time_end = 0;	
