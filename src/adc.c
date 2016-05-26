@@ -47,7 +47,7 @@ void adc_process(uint16_t *pa)
 	}
 	
 	// threshold latches
-    if ((comparator > 20000) && (zero != 0)){
+    if ((comparator > 22000) && (zero != 0)){
         th_latch = 2;
     }
     else if ((comparator > 2000) && (zero != 0)){
@@ -71,7 +71,7 @@ void adc_process(uint16_t *pa)
 		// choose between S and R shapes
         if(th_latch == 2){
 			time_end = time_ms;
-			td = (time_end - time_start);
+			td = (time_end - time_start) + 2;
 			if(ideal_tri(peak, total_samples) > int_total){
 				s += 1;
 			} else{
@@ -86,7 +86,7 @@ void adc_process(uint16_t *pa)
 				n += 1;
 				toggle = 0;
 				time_end = time_ms;
-			    td = 2* (time_end - time_start);	
+			    td = 3* (time_end - time_start);	
 			} else {
 				toggle = 1;
 			}			
